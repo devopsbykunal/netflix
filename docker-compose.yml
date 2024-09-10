@@ -1,20 +1,11 @@
-version: '3.7'
-
+version: '3.8'
 services:
-  web:
+  netflix:
     image: joshikunal/netflix:latest
+    ports:
+      - "8080:80"
     deploy:
       replicas: 3
-      restart_policy:
-        condition: on-failure
-    ports:
-      - "80:80"
-    networks:
-      - webnet
-
-networks:
-  webnet:
-    driver: overlay
 
 
 
