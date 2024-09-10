@@ -1,6 +1,10 @@
-FROM ubuntu
-RUN apt-get update -y
-RUN apt-get install apache2 -y
-COPY index.html /var/www/html/
-CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+# Use an official Nginx image
+FROM nginx:alpine
+
+# Copy your HTML, CSS, and JS files to the Nginx web directory
+COPY ./src /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
 
