@@ -1,8 +1,8 @@
-version: '3'
+version: '3.8'
+
 services:
   web:
-    image: nginx:alpine
-    container_name: netflix_login_page
+    image: joshikunal/netflix:latest
     ports:
       - "8080:80"
     volumes:
@@ -13,3 +13,4 @@ services:
 networks:
   webnet:
     driver: overlay
+
