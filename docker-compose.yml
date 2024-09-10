@@ -1,23 +1,21 @@
-version: "3.9"
+version: '3.7'
 
 services:
-  web:
+  netflix:
     image: joshikunal/netflix:latest
-    build: .
-    ports:
-      - "3000:3000"
     deploy:
       replicas: 3
-      update_config:
-        parallelism: 2
-        delay: 10s
       restart_policy:
         condition: on-failure
+    ports:
+      - "80:3000"
+    environment:
+      NODE_ENV: production
     networks:
-      - webnet
+      - netflix-net
 
 networks:
-  webnet:
+  netflix-net:
     driver: overlay
 
 
