@@ -1,15 +1,6 @@
-# Use an Nginx base image to serve static HTML
-FROM nginx:alpine
-
-# Remove the default Nginx website
-RUN rm -rf /usr/share/nginx/html/*
-
-# Copy your HTML and CSS files into the Nginx directory
-COPY public /usr/share/nginx/html
-
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+FROM ubuntu
+RUN apt-get update -y
+RUN apt-get install apache2 -y
+COPY index.html /var/www/html/
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
 
