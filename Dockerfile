@@ -1,18 +1,15 @@
-# Use node image as a base image
-FROM node:16-alpine
+# Use an Nginx base image to serve static HTML
+FROM nginx:alpine
 
-# Set working directory
-WORKDIR /app
+# Remove the default Nginx website
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copy package.json and install dependencies
-COPY package.json ./
-RUN npm install
+# Copy your HTML and CSS files into the Nginx directory
+COPY public /usr/share/nginx/html
 
-# Copy the rest of the application code
-COPY . .
+# Expose port 80
+EXPOSE 80
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
 
-# Start the app
-CMD ["npm", "start"]`
