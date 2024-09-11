@@ -7,7 +7,7 @@ COPY ./js/script.js /usr/share/nginx/html/js/script.js
 COPY ./img/ /usr/share/nginx/html/img/
 
 # Expose port 80 for the web server
-EXPOSE 80
+EXPOSE 81
 
 # Run Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
