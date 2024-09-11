@@ -4,7 +4,7 @@ services:
     image: nginx:alpine
     container_name: nginx_container
     ports:
-      - "80:80"
+      - "81:80"
     volumes:
       - ./index.html:/usr/share/nginx/html/index.html
       - ./style/style.css:/usr/share/nginx/html/style/style.css
