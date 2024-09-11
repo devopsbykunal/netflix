@@ -1,10 +1,19 @@
-version: '3.8'
+version: '3'
 services:
-  netflix:
-    image: joshikunal/netflix:latest
+  web:
+    image: nginx:alpine
+    container_name: nginx_container
     ports:
-      - "81:80"
-    deploy:
-      replicas: 3
+      - "80:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./style/style.css:/usr/share/nginx/html/style/style.css
+      - ./js/script.js:/usr/share/nginx/html/js/script.js
+      - ./img:/usr/share/nginx/html/img
+    networks:
+      - webnet
+    command: ["nginx", "-g", "daemon off;"]
 
+networks:
+  webnet:
 
