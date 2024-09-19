@@ -30,7 +30,7 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                sh 'docker stack deploy -c docker-compose.yml netflix'
+                sh 'docker run -d -p 8081:80 joshikunal/netflix:latest'
             }
         }
     }
