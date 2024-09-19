@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netflix-app
+  labels:
+    app: netflix
+spec:
+  replicas: 3  # Adjust the number of replicas as needed for your scaling needs
+  selector:
+    matchLabels:
+      app: netflix
+  template:
+    metadata:
+      labels:
+        app: netflix
+    spec:
+      containers:
+      - name: netflix-container
+        image: joshikunal/netflix:latest  # The latest version of your Docker image
+        ports:
+        - containerPort: 80  # Assuming your application is running on port 80
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        env:  # Add environment variables if required by your app
+        - name: ENV_VAR_NAME
+          value: "env_value"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: netflix-service
+  labels:
+    app: netflix
+spec:
+  type: LoadBalancer  # This exposes the service externally. Change to NodePort or ClusterIP for internal services.
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  selector:
+    app: netflix
