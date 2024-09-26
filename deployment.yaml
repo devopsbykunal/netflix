@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: netflix-app
+  name: netflix-deployment
   labels:
     app: netflix
 spec:
-  replicas: 3  # Adjust the number of replicas as needed for your scaling needs
+  replicas: 3
   selector:
     matchLabels:
       app: netflix
@@ -15,44 +15,65 @@ spec:
         app: netflix
     spec:
       containers:
-      - name: netflix-container
-        image: joshikunal/netflix:latest  # The latest version of your Docker image
-        ports:
-        - containerPort: 80  # Assuming your application is running on port 80
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-        env:  # Add environment variables if required by your app
-        - name: ENV_VAR_NAME
-          value: "env_value"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 20
+        - name: netflix-container
+          image: joshikunal/netflix:latest
+          ports:
+            - containerPort: 8080 
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: netflix-service
-  labels:
-    app: netflix
 spec:
-  type: LoadBalancer  # This exposes the service externally. Change to NodePort or ClusterIP for internal services.
-  ports:
-    - port: 80
-      targetPort: 80
-      protocol: TCP
   selector:
     app: netflix
+  ports:
+    - protocol: TCP
+      port: 80 
+      targetPort: 8080 
+  type: LoadBalancer 
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: netflix-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: netflix-deployment
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80 # Scale when CPU usage is more than 80%
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: netflix-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: netflix.example.com # Use your real domain or IP
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: netflix-service
+                port:
+                  number: 80
